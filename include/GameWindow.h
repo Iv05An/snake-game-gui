@@ -3,14 +3,12 @@
 #define GAMEWINDOW_H
 #include <SFML/Graphics.hpp>
 #include <vector>
-
-#include <iostream>
 #include <windows.h>
 #include "Snake.h"
 #include "Utils.h"
 
 class GameWindow {
-    sf::RenderWindow window;
+    sf::RenderWindow &window;
 struct SnakeSegment
 {
     sf::RectangleShape shape;
@@ -50,7 +48,7 @@ private:
     void render();
     void move();
 public:
-    GameWindow();
+    explicit GameWindow(sf::RenderWindow& _window);
     void run();
 private:
     void handleEvents();
