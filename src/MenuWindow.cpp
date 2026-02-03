@@ -8,6 +8,8 @@ MenuWindow::MenuWindow(sf::RenderWindow &_window)
                "../../assets/textures/start_hovered.png")
     , settingBtn("../../assets/textures/setting_default.png",
                  "../../assets/textures/setting_hovered.png")
+    , exitBtn("../../assets/textures/exit_default.png",
+                 "../../assets/textures/exit_hovered.png")
 {
     if (!backgroundTexture.loadFromFile("../../assets/textures/menu_background.png")) {
         std::cerr << "ERROR: Failed to load menu_background.png" << std::endl;
@@ -37,8 +39,15 @@ void MenuWindow::setupButtons() {
     sf::FloatRect settingBtnBounds = settingBtn.getSprite().getGlobalBounds();
     settingBtn.getSprite().setPosition(
         surface.x / 2 - settingBtnBounds.width / 2,
-        surface.y / 2 - settingBtnBounds.height / 2 + 100
+        surface.y / 2 - settingBtnBounds.height / 2 + 75
     );
+
+    exitBtn.getSprite().setScale(0.1f, 0.1f);
+    sf::FloatRect exitBtnBounds = exitBtn.getSprite().getGlobalBounds();
+    exitBtn.getSprite().setPosition(
+        surface.x / 2 - exitBtnBounds.width / 2,
+        surface.y / 2 - exitBtnBounds.height / 2 + 150
+        );
 }
 
 void MenuWindow::launchGame() {
@@ -58,7 +67,12 @@ void MenuWindow::handleEvents() {
                     std::cout << "Launching game..." << std::endl;
                     launchGame();
                 }
+                if(exitBtn.isMouseOver(window)) {
+                    std::cout << "Stoping game..." << std::endl;
+                    window.close();
+                }
             }
+
         }
     }
 }
@@ -66,6 +80,7 @@ void MenuWindow::handleEvents() {
 void MenuWindow::update() {
     startBtn.update(window);
     settingBtn.update(window);
+    exitBtn.update(window);
 }
 
 void MenuWindow::draw() {
@@ -74,6 +89,7 @@ void MenuWindow::draw() {
     window.draw(backgroundSprite);
     window.draw(startBtn.getSprite());
     window.draw(settingBtn.getSprite());
+    window.draw(exitBtn.getSprite());
     /////
     window.display();
 }

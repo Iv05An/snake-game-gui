@@ -10,6 +10,7 @@ private:
     sf::Sprite backgroundSprite;
     MenuButton startBtn;
     MenuButton settingBtn;
+    MenuButton exitBtn;
 
 public:
     explicit MenuWindow(sf::RenderWindow &_window);
