@@ -1,5 +1,6 @@
 // GameWindow.cpp
 #include "GameWindow.h"
+#include <SFML/Graphics.hpp>
 #include <iostream>
 
 
@@ -20,7 +21,7 @@ void GameWindow::initializeSnake()
         SnakeBody.push_back(segment);
     }
 }
-GameWindow:: GameWindow(): window(sf::VideoMode(800, 600), "Snake") 
+GameWindow::GameWindow(sf::RenderWindow& _window): window(_window)
 {
     window.setFramerateLimit(60);
     initializeSnake();
@@ -61,33 +62,33 @@ void GameWindow::handleEvents() {
             case sf::Keyboard::W:
             case sf::Keyboard::Up:
                 if (direction!=DOWN)
-                    {
-                        newDirection=UP;
-                    }
+                {
+                    newDirection=UP;
+                }
                 // Snake.setDirection(UP);
                 break;
             case sf::Keyboard::S:
             case sf::Keyboard::Down:
                 if (direction!=UP)
-                    {
-                        newDirection=DOWN;
-                    }
+                {
+                    newDirection=DOWN;
+                }
                 // Snake.setDirection(DOWN);
                 break;
             case sf::Keyboard::A:
             case sf::Keyboard::Left:
                 if (direction!=RIGHT)
-                    {
-                        newDirection=LEFT;
-                    }
+                {
+                    newDirection=LEFT;
+                }
                 // Snake.setDirection(LEFT);
                 break;
             case sf::Keyboard::D:
             case sf::Keyboard::Right:
                 if (direction!=LEFT)
-                    {
-                        newDirection=RIGHT;
-                    }
+                {
+                    newDirection=RIGHT;
+                }
                 // Snake.setDirection(RIGHT);
                 break;
             default:
@@ -104,13 +105,13 @@ void GameWindow::move()
 {
     // Обновляем направление
     direction = newDirection;
-    
+
     // Проверяем, можно ли двигаться в этом направлении
     if (direction == NONE) return;
-    
+
 
     std::vector<SnakeSegment> OldBody = SnakeBody;
-    
+
     switch (direction)
     {
     case UP:    OldBody[0].y-=25; break;
@@ -119,18 +120,18 @@ void GameWindow::move()
     case RIGHT: OldBody[0].x+=25; break;
     default: break;
     }
-               
-        for (int i = SnakeBody.size()-1; i>0; i--)
-        {
-            SnakeBody[i].x = SnakeBody[i-1].x;
-            SnakeBody[i].y = SnakeBody[i-1].y;
-            SnakeBody[i].shape.setPosition(SnakeBody[i].x, SnakeBody[i].y);
-        }
-        
-        SnakeBody[0].x = OldBody[0].x;
-        SnakeBody[0].y = OldBody[0].y;
-        SnakeBody[0].shape.setPosition(SnakeBody[0].x, SnakeBody[0].y);
-    
+
+    for (int i = SnakeBody.size()-1; i>0; i--)
+    {
+        SnakeBody[i].x = SnakeBody[i-1].x;
+        SnakeBody[i].y = SnakeBody[i-1].y;
+        SnakeBody[i].shape.setPosition(SnakeBody[i].x, SnakeBody[i].y);
+    }
+
+    SnakeBody[0].x = OldBody[0].x;
+    SnakeBody[0].y = OldBody[0].y;
+    SnakeBody[0].shape.setPosition(SnakeBody[0].x, SnakeBody[0].y);
+
 }
 
 void GameWindow::update()
@@ -181,7 +182,7 @@ void GameWindow::run() {
     while(window.isOpen()) {
         handleEvents();
         if (CheckWallCollision()) update();
-        else 
+        else
         {
             // window.close();
             // std::cout<<"GAME OVER";
