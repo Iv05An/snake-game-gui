@@ -10,5 +10,6 @@ struct SnakeSegment
 {
     sf::RectangleShape shape;
     int x, y;
+
 };
 #endif

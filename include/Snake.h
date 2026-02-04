@@ -14,22 +14,32 @@ enum Direction
 class Snake
 {
 private:
-    std::vector<segment> body;
+    std::vector<SnakeSegment> SnakeBody;
+    const int TILE_SIZE = 25;
+
+    bool collision;
+
     Direction direction;
     Direction newDirection;
-    bool collision;
-    bool collisionWithWall;
 
 public:
-    Snake(int startX=10, int startY=5, int initialLength=3);
 
+    Snake();
     void move();
-    void setDirection(Direction newDirect);
-    bool valide_collisionWithWall(int width, int height);
-    bool truthCollision() const {return collision;};
-    void eating(std::vector<Food> &foods, int &count);
+    void eating(std::vector<Food> &foods);
 
-    const std::vector<segment>& getBody() const {return body;};
+    const std::vector<SnakeSegment>& getBody() const {return SnakeBody;};
+    bool CheckWallCollision(int &LEFT_BORDER, int &RIGTH_BORDER, int &TOP_BORDER, int &DOWN_BORDER);
+    const bool truthCollision() const {return collision;};
+
+    Direction getDirection() const {return direction;}
+    Direction getNewDirection() const {return newDirection;}
+
+    void setDirection(Direction inpDirection) {direction=inpDirection;}
+    void setNewDirection(Direction inpNewDirection) {newDirection=inpNewDirection;}
+
+    bool getCollision() const {return collision;}
 };
+
 
 #endif

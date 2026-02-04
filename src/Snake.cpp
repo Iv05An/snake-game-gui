@@ -1,35 +1,49 @@
 #include "../include/Snake.h"
 #include <iostream>
 
-Snake::Snake(int startX, int startY, int initialLength)
+Snake::Snake()
 {
-    direction = RIGHT;
-    newDirection = RIGHT;
-    collision = false;
-    collisionWithWall = false;
-
-    for(int i=0; i<initialLength; ++i)
+    SnakeBody.clear();
+    for (int i = 0; i<3; ++i)
     {
-        segment partBody;
-        partBody.x=startX-i;
-        partBody.y=startY;
+        SnakeSegment segment;
+        segment.y = 50;
+        segment.x = 100 - i * 25;
 
-        body.push_back(partBody);
+        segment.shape.setSize(sf::Vector2f(25, 25));
+        if (i==0) segment.shape.setFillColor(sf::Color::Green);
+        else segment.shape.setFillColor(sf::Color(0, 180, 0));
+        segment.shape.setPosition(segment.x, segment.y);
+
+        SnakeBody.push_back(segment);
     }
+
+    direction=RIGHT;
+    newDirection=RIGHT;
+    collision=false;
 }
 
-void Snake::eating(std::vector<Food> &foods, int &count)
+
+
+void Snake::eating(std::vector<Food> &foods) // можно будет улучшить логику поедания в SnakeBody.push_back({shape, tail.x, tail.y});
     {
-                    // для поедания
-        segment tail= body.back();
+        SnakeSegment tail= SnakeBody.back();
         for (int i = 0; i<foods.size(); ++i)
         {
-            if (body[0].x==foods[i].getX() && body[0].y==foods[i].getY())
+            if (SnakeBody[0].x==foods[i].getX() && SnakeBody[0].y==foods[i].getY())
             {
-                body.push_back({tail.x, tail.y});
+                sf::RectangleShape shape;
+                shape.setFillColor(sf::Color(0, 180, 0));
+                shape.setSize(sf::Vector2f(TILE_SIZE, TILE_SIZE));
+                shape.setPosition(tail.x, tail.y);
+
+                SnakeSegment newSegment;
+                newSegment.shape = shape;
+                newSegment.x = tail.x;
+                newSegment.y = tail.y;
+                SnakeBody.push_back(newSegment);
 
                 foods.erase(foods.begin()+i);
-                count--;
                 --i;
                 break;
             }
@@ -37,42 +51,17 @@ void Snake::eating(std::vector<Food> &foods, int &count)
         
     }
 
-void Snake::setDirection(Direction newDirect)
+
+
+bool Snake::CheckWallCollision(int &LEFT_BORDER, int &RIGTH_BORDER, int &TOP_BORDER, int &DOWN_BORDER)
 {
-    if ((direction==UP && newDirect!=DOWN)||
-        (direction==DOWN && newDirect!=UP)||
-        (direction==LEFT && newDirect!=RIGHT)||
-        (direction==RIGHT && newDirect!=LEFT))
-        {
-            newDirection=newDirect;
-        }
+    int HeadX = SnakeBody[0].x;
+    int HeadY = SnakeBody[0].y;
+
+    if (HeadX<LEFT_BORDER+TILE_SIZE || HeadX>RIGTH_BORDER-TILE_SIZE || HeadY<TOP_BORDER+TILE_SIZE || HeadY>DOWN_BORDER-TILE_SIZE) return false;
+    return true;
 }
 
-bool Snake::valide_collisionWithWall(int width, int height)
-{
-    if (body.empty()) return false;
-    
-    // Предсказываем следующую позицию головы
-    int nextX = body[0].x;
-    int nextY = body[0].y;
-    
-    // Используем newDirection (будущее направление), а не direction (текущее)
-    switch (newDirection)
-    {
-    case UP:    nextY--; break;
-    case DOWN:  nextY++; break;
-    case LEFT:  nextX--; break;
-    case RIGHT: nextX++; break;
-    default: return false; // Если направление не задано
-    }
-    
-    // Проверяем границы (от 0 до width-1, от 0 до height-1)
-    // Границы отрисовываются как '#' по индексам 0 и width-1/height-1
-    bool inside = (nextX >= 1 && nextX <= width-2 && 
-                   nextY >= 1 && nextY <= height-2);
-    
-    return inside;
-}
 
 void Snake::move()
 {
@@ -82,23 +71,22 @@ void Snake::move()
     // Проверяем, можно ли двигаться в этом направлении
     if (direction == NONE) return;
     
-    // 1. Вычисляем новую позицию головы
-    int newHeadX = body[0].x;
-    int newHeadY = body[0].y;
+
+    std::vector<SnakeSegment> OldBody = SnakeBody;
     
     switch (direction)
     {
-    case UP:    newHeadY--; break;
-    case DOWN:  newHeadY++; break;
-    case LEFT:  newHeadX--; break;
-    case RIGHT: newHeadX++; break;
+    case UP:    OldBody[0].y-=25; break;
+    case DOWN:  OldBody[0].y+=25; break;
+    case LEFT:  OldBody[0].x-=25; break;
+    case RIGHT: OldBody[0].x+=25; break;
     default: break;
     }
-                
-    // 2. Проверяем столкновение с телом
+        
     collision = false;
-    for (int i = 1; i < body.size(); i++) {
-        if (body[i].x == newHeadX && body[i].y == newHeadY) {
+    for (int i = 1; i < SnakeBody.size(); i++) {
+        //if ((OldBody[i].x - OldBody[0].x) == TILE_SIZE && (OldBody[i].y - OldBody[0].y) == TILE_SIZE) {
+        if (OldBody[i].x == OldBody[0].x && OldBody[i].y == OldBody[0].y) {
             collision = true;
             break;
         }    
@@ -106,14 +94,17 @@ void Snake::move()
                 
     // 3. Если столкновения нет — двигаем
     if (!collision) {               
-        for (int i = body.size()-1; i>0; i--)
+        for (int i = SnakeBody.size()-1; i>0; i--)
         {
-            body[i].x = body[i-1].x;
-            body[i].y = body[i-1].y;
+            SnakeBody[i].x = SnakeBody[i-1].x;
+            SnakeBody[i].y = SnakeBody[i-1].y;
+            SnakeBody[i].shape.setPosition(SnakeBody[i].x, SnakeBody[i].y);
         }
         
-        body[0].x = newHeadX;
-        body[0].y = newHeadY;
+        SnakeBody[0].x = OldBody[0].x;
+        SnakeBody[0].y = OldBody[0].y;
+        SnakeBody[0].shape.setPosition(SnakeBody[0].x, SnakeBody[0].y);
     }
-    // ВАЖНО: Нужно где-то обрабатывать collision = true!
+        
+    
 }
