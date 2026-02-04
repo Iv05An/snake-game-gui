@@ -14,19 +14,20 @@ bool Food::isFoodAt(const std::vector<Food> &foods, int checkX, int checkY) //в
     return false;
 }
 
-Food Food::generateFood(const std::vector<segment> &snake, const std::vector<Food> &foods, const int& width, const int& height)
+Food Food::generateFood(const std::vector<SnakeSegment> &SnakeBody, const std::vector<Food> &foods, const int& width, const int& height)
 {
     int foodX, foodY;
     bool valid = false;
     while (!valid)
     {
+        const int TILE_SIZE = 25; //временно (из-за static)
         valid = true;
-        foodX = 1 + rand() % (width - 2);   // от 1 до width-2
-        foodY = 1 + rand() % (height - 2);  // от 1 до height-2
+        foodX = TILE_SIZE + TILE_SIZE*(rand() % ((width - 2 * TILE_SIZE) / TILE_SIZE));   // от 1 до width-2
+        foodY = TILE_SIZE + TILE_SIZE*(rand() % ((height - 2 * TILE_SIZE) / TILE_SIZE));  // от 1 до height-2
             
-        for (int j=0; j<snake.size(); j++)
+        for (int j=0; j<SnakeBody.size(); j++)
         {
-            if (foodX == snake[j].x && foodY == snake[j].y) 
+            if (foodX == SnakeBody[j].x && foodY == SnakeBody[j].y) 
             {
                 valid = false;
                 continue;
@@ -42,4 +43,13 @@ Food Food::generateFood(const std::vector<segment> &snake, const std::vector<Foo
         }
     }   
     return  Food(foodX, foodY);   
+}
+
+sf::RectangleShape Food::ShapeFood()
+{
+    ElemFood.setFillColor(sf::Color::Yellow);
+    ElemFood.setSize(sf::Vector2f(TILE_SIZE, TILE_SIZE));
+    ElemFood.setPosition(x, y);
+
+    return ElemFood;
 }

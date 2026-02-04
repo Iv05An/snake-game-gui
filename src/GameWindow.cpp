@@ -9,8 +9,8 @@ void GameWindow::initializeSnake()
     for (int i = 0; i<3; ++i)
     {
         SnakeSegment segment;
-        segment.y = 300;
-        segment.x = 140 - i * 25;
+        segment.y = 50;
+        segment.x = 100 - i * 25;
 
         segment.shape.setSize(sf::Vector2f(25, 25));
         if (i==0) segment.shape.setFillColor(sf::Color::Green);
@@ -44,7 +44,7 @@ bool GameWindow::CheckWallCollision()
     int HeadX = SnakeBody[0].x;
     int HeadY = SnakeBody[0].y;
 
-    if (HeadX<=LEFT_BORDER+TILE_SIZE || HeadX>=RIGTH_BORDER-TILE_SIZE || HeadY<=TOP_BORDER+TILE_SIZE || HeadY>=DOWN_BORDER-TILE_SIZE) return false;
+    if (HeadX<LEFT_BORDER+TILE_SIZE || HeadX>RIGTH_BORDER-TILE_SIZE || HeadY<TOP_BORDER+TILE_SIZE || HeadY>DOWN_BORDER-TILE_SIZE) return false;
     return true;
 }
 
@@ -100,6 +100,27 @@ void GameWindow::handleEvents() {
 
 }
 
+void GameWindow::eating(std::vector<Food> &foods) // можно будет улучшить логику поедания в SnakeBody.push_back({shape, tail.x, tail.y});
+    {
+        SnakeSegment tail= SnakeBody.back();
+        for (int i = 0; i<foods.size(); ++i)
+        {
+            if (SnakeBody[0].x==foods[i].getX() && SnakeBody[0].y==foods[i].getY())
+            {
+                sf::RectangleShape shape;
+                shape.setFillColor(sf::Color(0, 180, 0));
+                shape.setSize(sf::Vector2f(TILE_SIZE, TILE_SIZE));
+                shape.setPosition(tail.x, tail.y);
+                SnakeBody.push_back({shape, tail.x, tail.y});
+
+                foods.erase(foods.begin()+i);
+                --i;
+                break;
+            }
+        }
+        
+    }
+
 void GameWindow::move()
 {
     // Обновляем направление
@@ -119,7 +140,18 @@ void GameWindow::move()
     case RIGHT: OldBody[0].x+=25; break;
     default: break;
     }
-               
+        
+    collision = false;
+    for (int i = 1; i < SnakeBody.size(); i++) {
+        //if ((OldBody[i].x - OldBody[0].x) == TILE_SIZE && (OldBody[i].y - OldBody[0].y) == TILE_SIZE) {
+        if (OldBody[i].x == OldBody[0].x && OldBody[i].y == OldBody[0].y) {
+            collision = true;
+            break;
+        }    
+    }
+                
+    // 3. Если столкновения нет — двигаем
+    if (!collision) {               
         for (int i = SnakeBody.size()-1; i>0; i--)
         {
             SnakeBody[i].x = SnakeBody[i-1].x;
@@ -130,15 +162,26 @@ void GameWindow::move()
         SnakeBody[0].x = OldBody[0].x;
         SnakeBody[0].y = OldBody[0].y;
         SnakeBody[0].shape.setPosition(SnakeBody[0].x, SnakeBody[0].y);
+    }
+        
     
 }
+
+
 
 void GameWindow::update()
 {
     if (moveClock.getElapsedTime().asSeconds()>=moveInterval)
     {
         move();
+        eating(foods);
         moveClock.restart();
+    }
+    if (foodClock.getElapsedTime().asSeconds()>=foodInterval && foods.size()<LIMIT_FOODS)
+    {
+        Food cord_food = Food::generateFood(SnakeBody, foods, FIELD_WIDTH, FIELD_HEIGHT);
+        foods.push_back(cord_food);
+        foodClock.restart();
     }
 }
 void GameWindow::drawSnake()
@@ -167,11 +210,22 @@ void GameWindow::drawBorder()
     border.setPosition(RIGTH_BORDER, 0);
     window.draw(border);
 }
+
+void GameWindow::drawFoods()
+{
+    for (auto &food: foods)
+    {
+        sf::RectangleShape Shape = food.ShapeFood();
+        window.draw(Shape);
+    }
+}
+
 void GameWindow::render()
 {
     window.clear(sf::Color::Black);
     drawSnake();
     drawBorder();
+    drawFoods();
     window.display();
 }
 
@@ -180,12 +234,12 @@ void GameWindow::render()
 void GameWindow::run() {
     while(window.isOpen()) {
         handleEvents();
-        if (CheckWallCollision()) update();
+        if (CheckWallCollision() && !collision) update();
         else 
         {
-            // window.close();
-            // std::cout<<"GAME OVER";
-            // break;
+            window.close();
+            std::cout<<"GAME OVER";
+            break;
         }
         render();
     }

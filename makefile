@@ -16,7 +16,7 @@ LDFLAGS = -L"C:/SFML-2.5.0/lib"
 LIBS = -lsfml-graphics -lsfml-window -lsfml-system
 
 SRC_DIR = src
-SRCS = $(SRC_DIR)/main.cpp $(SRC_DIR)/GameWindow.cpp
+SRCS = $(SRC_DIR)/main.cpp $(SRC_DIR)/GameWindow.cpp $(SRC_DIR)/Food.cpp
 OBJS = $(SRCS:.cpp=.o)
 TARGET = snake-gui.exe
 
