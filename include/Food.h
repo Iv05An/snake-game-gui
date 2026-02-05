@@ -3,13 +3,15 @@
 #include <vector>
 #include "segment.h"
 #include <SFML/Graphics.hpp>
-#define LIMIT_FOODS 5 // временно
+#include "Constants.h" 
+#include "ColorPalette.h"
+// #define LIMIT_FOODS 5 // временно
 
 class Food
 {
     private:
         int x, y;
-        int TILE_SIZE = 25;
+        // int TILE_SIZE = 25;
         sf::RectangleShape ElemFood;
     public:
         Food(int xPos, int yPos);

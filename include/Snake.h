@@ -2,6 +2,8 @@
 #define SNAKE_H
 #include "segment.h"
 #include "Food.h"
+#include "Constants.h"
+#include "ColorPalette.h" 
 #include <vector>
 #include <conio.h>
 #include <windows.h>
@@ -15,7 +17,7 @@ class Snake
 {
 private:
     std::vector<SnakeSegment> SnakeBody;
-    const int TILE_SIZE = 25;
+    // const int TILE_SIZE = 25;
 
     bool collision;
 
@@ -29,7 +31,7 @@ public:
     void eating(std::vector<Food> &foods);
 
     const std::vector<SnakeSegment>& getBody() const {return SnakeBody;};
-    bool CheckWallCollision(int &LEFT_BORDER, int &RIGTH_BORDER, int &TOP_BORDER, int &DOWN_BORDER);
+    bool CheckWallCollision();
     const bool truthCollision() const {return collision;};
 
     Direction getDirection() const {return direction;}

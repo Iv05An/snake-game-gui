@@ -2,17 +2,9 @@
 #include "GameWindow.h"
 #include <iostream>
 
-GameWindow:: GameWindow(): window(sf::VideoMode(800, 600), "Snake") 
+GameWindow:: GameWindow(): window(sf::VideoMode(Constants::WINDOW_WIDTH, Constants::WINDOW_HEIGHT), "Snake") 
 {
     window.setFramerateLimit(60);
-
-    FIELD_WIDTH = 800;
-    FIELD_HEIGHT = 600;
-
-    LEFT_BORDER = 0;
-    RIGTH_BORDER = FIELD_WIDTH - TILE_SIZE;
-    TOP_BORDER = 0;
-    DOWN_BORDER = FIELD_HEIGHT - TILE_SIZE;
 
 }
 
@@ -72,15 +64,15 @@ void GameWindow::handleEvents() {
 
 void GameWindow::update()
 {
-    if (moveClock.getElapsedTime().asSeconds()>=moveInterval)
+    if (moveClock.getElapsedTime().asSeconds()>=Constants::SNAKE_MOVE_INTERVAL)
     {
         ObjSnake.move();
         ObjSnake.eating(foods);
         moveClock.restart();
     }
-    if (foodClock.getElapsedTime().asSeconds()>=foodInterval && foods.size()<LIMIT_FOODS)
+    if (foodClock.getElapsedTime().asSeconds()>=Constants::FOOD_GENERATION_INTERVAL && foods.size()<Constants::FOOD_GENERATION_INTERVAL)
     {
-        Food cord_food = Food::generateFood(ObjSnake.getBody(), foods, FIELD_WIDTH, FIELD_HEIGHT);
+        Food cord_food = Food::generateFood(ObjSnake.getBody(), foods, Constants::FIELD_WIDTH, Constants::FIELD_HEIGHT);
         foods.push_back(cord_food);
         foodClock.restart();
     }
@@ -98,18 +90,18 @@ void GameWindow::drawBorder()
 {
     sf::RectangleShape border;
     border.setFillColor(sf::Color::Red);
-    border.setSize(sf::Vector2f(FIELD_WIDTH, TILE_SIZE));
+    border.setSize(sf::Vector2f(Constants::FIELD_WIDTH, Constants::TILE_SIZE));
     border.setPosition(0, 0);
     window.draw(border);
 
-    border.setPosition(0, DOWN_BORDER);
+    border.setPosition(0, Constants::BOTTOM_BORDER);
     window.draw(border);
 
-    border.setSize(sf::Vector2f(TILE_SIZE, FIELD_HEIGHT));
+    border.setSize(sf::Vector2f(Constants::TILE_SIZE, Constants::FIELD_HEIGHT));
     border.setPosition(0, 0);
     window.draw(border);
 
-    border.setPosition(RIGTH_BORDER, 0);
+    border.setPosition(Constants::RIGHT_BORDER, 0);
     window.draw(border);
 }
 
@@ -136,7 +128,7 @@ void GameWindow::render()
 void GameWindow::run() {
     while(window.isOpen()) {
         handleEvents();
-        if (ObjSnake.CheckWallCollision(LEFT_BORDER, RIGTH_BORDER, TOP_BORDER, DOWN_BORDER) && !ObjSnake.getCollision()) update();
+        if (ObjSnake.CheckWallCollision() && !ObjSnake.getCollision()) update();
         else 
         {
             window.close();

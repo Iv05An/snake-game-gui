@@ -7,12 +7,12 @@ Snake::Snake()
     for (int i = 0; i<3; ++i)
     {
         SnakeSegment segment;
-        segment.y = 50;
-        segment.x = 100 - i * 25;
+        segment.y = Constants::SNAKE_START_Y;
+        segment.x = Constants::SNAKE_START_X - i * Constants::TILE_SIZE;
 
         segment.shape.setSize(sf::Vector2f(25, 25));
-        if (i==0) segment.shape.setFillColor(sf::Color::Green);
-        else segment.shape.setFillColor(sf::Color(0, 180, 0));
+        if (i==0) segment.shape.setFillColor(Colors::SNAKE_HEAD);
+        else segment.shape.setFillColor(Colors::SNAKE_BODY);
         segment.shape.setPosition(segment.x, segment.y);
 
         SnakeBody.push_back(segment);
@@ -33,8 +33,8 @@ void Snake::eating(std::vector<Food> &foods) // можно будет улучш
             if (SnakeBody[0].x==foods[i].getX() && SnakeBody[0].y==foods[i].getY())
             {
                 sf::RectangleShape shape;
-                shape.setFillColor(sf::Color(0, 180, 0));
-                shape.setSize(sf::Vector2f(TILE_SIZE, TILE_SIZE));
+                shape.setFillColor(Colors::SNAKE_BODY);
+                shape.setSize(sf::Vector2f(Constants::TILE_SIZE, Constants::TILE_SIZE));
                 shape.setPosition(tail.x, tail.y);
 
                 SnakeSegment newSegment;
@@ -53,12 +53,14 @@ void Snake::eating(std::vector<Food> &foods) // можно будет улучш
 
 
 
-bool Snake::CheckWallCollision(int &LEFT_BORDER, int &RIGTH_BORDER, int &TOP_BORDER, int &DOWN_BORDER)
+bool Snake::CheckWallCollision()
 {
     int HeadX = SnakeBody[0].x;
     int HeadY = SnakeBody[0].y;
 
-    if (HeadX<LEFT_BORDER+TILE_SIZE || HeadX>RIGTH_BORDER-TILE_SIZE || HeadY<TOP_BORDER+TILE_SIZE || HeadY>DOWN_BORDER-TILE_SIZE) return false;
+    // if (HeadX<LEFT_BORDER+TILE_SIZE || HeadX>RIGTH_BORDER-TILE_SIZE || HeadY<TOP_BORDER+TILE_SIZE || HeadY>DOWN_BORDER-TILE_SIZE) return false;
+    if (HeadX<Constants::LEFT_BORDER+Constants::TILE_SIZE || HeadX>Constants::RIGHT_BORDER-Constants::TILE_SIZE || HeadY<Constants::TOP_BORDER+Constants::TILE_SIZE || HeadY>Constants::BOTTOM_BORDER-Constants::TILE_SIZE) return false;
+
     return true;
 }
 
@@ -76,10 +78,10 @@ void Snake::move()
     
     switch (direction)
     {
-    case UP:    OldBody[0].y-=25; break;
-    case DOWN:  OldBody[0].y+=25; break;
-    case LEFT:  OldBody[0].x-=25; break;
-    case RIGHT: OldBody[0].x+=25; break;
+    case UP:    OldBody[0].y-=Constants::TILE_SIZE; break;
+    case DOWN:  OldBody[0].y+=Constants::TILE_SIZE; break;
+    case LEFT:  OldBody[0].x-=Constants::TILE_SIZE; break;
+    case RIGHT: OldBody[0].x+=Constants::TILE_SIZE; break;
     default: break;
     }
         

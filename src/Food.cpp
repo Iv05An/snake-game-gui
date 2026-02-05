@@ -20,10 +20,10 @@ Food Food::generateFood(const std::vector<SnakeSegment> &SnakeBody, const std::v
     bool valid = false;
     while (!valid)
     {
-        const int TILE_SIZE = 25; //временно (из-за static)
+        // const int TILE_SIZE = 25; //временно (из-за static)
         valid = true;
-        foodX = TILE_SIZE + TILE_SIZE*(rand() % ((width - 2 * TILE_SIZE) / TILE_SIZE));   // от 1 до width-2
-        foodY = TILE_SIZE + TILE_SIZE*(rand() % ((height - 2 * TILE_SIZE) / TILE_SIZE));  // от 1 до height-2
+        foodX = Constants::TILE_SIZE + Constants::TILE_SIZE*(rand() % ((width - 2 * Constants::TILE_SIZE) / Constants::TILE_SIZE));   
+        foodY = Constants::TILE_SIZE + Constants::TILE_SIZE*(rand() % ((height - 2 * Constants::TILE_SIZE) / Constants::TILE_SIZE));  
             
         for (int j=0; j<SnakeBody.size(); j++)
         {
@@ -47,8 +47,8 @@ Food Food::generateFood(const std::vector<SnakeSegment> &SnakeBody, const std::v
 
 sf::RectangleShape Food::ShapeFood()
 {
-    ElemFood.setFillColor(sf::Color::Yellow);
-    ElemFood.setSize(sf::Vector2f(TILE_SIZE, TILE_SIZE));
+    ElemFood.setFillColor(Colors::FOOD);
+    ElemFood.setSize(sf::Vector2f(Constants::TILE_SIZE, Constants::TILE_SIZE));
     ElemFood.setPosition(x, y);
 
     return ElemFood;
