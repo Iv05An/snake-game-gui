@@ -25,31 +25,42 @@ Snake::Snake()
 
 
 
-void Snake::eating(std::vector<Food> &foods) // можно будет улучшить логику поедания в SnakeBody.push_back({shape, tail.x, tail.y});
+void Snake::eating(std::vector<Food> &foods)
+{
+    // Получаем голову змейки
+    int headX = SnakeBody[0].x;
+    int headY = SnakeBody[0].y;
+    
+    // Проверяем все еды на поле
+    for (size_t i = 0; i < foods.size(); ++i)
     {
-        SnakeSegment tail= SnakeBody.back();
-        for (int i = 0; i<foods.size(); ++i)
+        if (headX == foods[i].getX() && headY == foods[i].getY())
         {
-            if (SnakeBody[0].x==foods[i].getX() && SnakeBody[0].y==foods[i].getY())
-            {
-                sf::RectangleShape shape;
-                shape.setFillColor(Colors::SNAKE_BODY);
-                shape.setSize(sf::Vector2f(Constants::TILE_SIZE, Constants::TILE_SIZE));
-                shape.setPosition(tail.x, tail.y);
-
-                SnakeSegment newSegment;
-                newSegment.shape = shape;
-                newSegment.x = tail.x;
-                newSegment.y = tail.y;
-                SnakeBody.push_back(newSegment);
-
-                foods.erase(foods.begin()+i);
-                --i;
-                break;
-            }
+            // Получаем хвост
+            SnakeSegment tail = SnakeBody.back();
+            
+            // Создаем новый сегмент
+            SnakeSegment newSegment;
+            newSegment.x = tail.x;
+            newSegment.y = tail.y;
+            
+            // Настраиваем графику нового сегмента
+            newSegment.shape.setSize(sf::Vector2f(Constants::TILE_SIZE, Constants::TILE_SIZE));
+            newSegment.shape.setFillColor(Colors::SNAKE_BODY);
+            newSegment.shape.setPosition(newSegment.x, newSegment.y);
+            
+            // Добавляем новый сегмент
+            SnakeBody.push_back(newSegment);
+            
+            // Удаляем съеденную еду
+            foods.erase(foods.begin() + i);
+            
+            // Выходим, так как за один кадр съедаем только одну еду
+            break;
         }
-        
     }
+}
+
 
 
 

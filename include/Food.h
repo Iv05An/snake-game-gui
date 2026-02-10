@@ -12,9 +12,11 @@ class Food
     private:
         int x, y;
         // int TILE_SIZE = 25;
-        sf::RectangleShape ElemFood;
+        // sf::RectangleShape ElemFood;
+        sf::Sprite sprite;
+        std::string textureName;
     public:
-        Food(int xPos, int yPos);
+        Food(int xPos, int yPos, const std::string& texName="apple");
 
         static bool isFoodAt(const std::vector<Food> &foods, int checkX, int checkY);
 
@@ -23,10 +25,18 @@ class Food
 
         sf::RectangleShape ShapeFood();
 
+        // Отрисовка
+        void draw(sf::RenderWindow& window);
         
         int getX() const {return x;}
         int getY() const {return y;}
-
+        sf::Sprite& getSprite() { return sprite; }
+        const sf::Sprite& getSprite() const { return sprite; }
+        // Обновление позиции спрайта
+        void updateSpritePosition();
+        
+        // Установка текстуры (можно менять тип еды)
+        void setTexture(const std::string& texName);
 };
 
 // bool isFoodAt(const std::vector<Food> &foods, int checkX, int checkY);

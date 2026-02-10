@@ -1,10 +1,13 @@
 // GameWindow.cpp
 #include "GameWindow.h"
+#include "ResourceManager.h"
 #include <iostream>
 
 GameWindow:: GameWindow(): window(sf::VideoMode(Constants::WINDOW_WIDTH, Constants::WINDOW_HEIGHT), "Snake") 
 {
     window.setFramerateLimit(60);
+    auto &rm=ResourceManager::getInstance();
+    rm.loadTexture("apple", "assets/textures/apple.png");
 
 }
 
@@ -70,7 +73,7 @@ void GameWindow::update()
         ObjSnake.eating(foods);
         moveClock.restart();
     }
-    if (foodClock.getElapsedTime().asSeconds()>=Constants::FOOD_GENERATION_INTERVAL && foods.size()<Constants::FOOD_GENERATION_INTERVAL)
+    if (foodClock.getElapsedTime().asSeconds()>=Constants::FOOD_GENERATION_INTERVAL && foods.size()<Constants::MAX_FOOD_COUNT)
     {
         Food cord_food = Food::generateFood(ObjSnake.getBody(), foods, Constants::FIELD_WIDTH, Constants::FIELD_HEIGHT);
         foods.push_back(cord_food);
@@ -109,8 +112,8 @@ void GameWindow::drawFoods()
 {
     for (auto &food: foods)
     {
-        sf::RectangleShape Shape = food.ShapeFood();
-        window.draw(Shape);
+        // sf::RectangleShape Shape = food.ShapeFood();
+        window.draw(food.getSprite());
     }
 }
 
